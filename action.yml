@@ -12,21 +12,21 @@ on:
 
 jobs:
   setup_roswell:
-    name: ${{ inputs.lisp }} on ${{ inputs.os }}
+    name: ${{ github.events.inputs.lisp }} on ${{ github.events.inputs.os }}
     steps:
       - name: Setup MSYS2 if Windows
-        if: ${{ startsWith( inputs.os , 'windows' }}
+        if: ${{ startsWith( github.events.inputs.os , 'windows' }}
         uses: msys2/setup-msys2@v2
       - name: Install Roswell
         env:
-          LISP: ${{ inputs.lisp }}
+          LISP: ${{ github.events.inputs.lisp }}
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
       - name: Add Roswell to Linux/MacOS Path
-        if: ${{ startsWith( inputs.os , 'ubuntu' ) || startsWith( inputs.os , 'mac' ) }}
+        if: ${{ startsWith( github.events.inputs.os , 'ubuntu' ) || startsWith( github.events.inputs.os , 'mac' ) }}
         run: |
           echo $HOME/.roswell/bin >> $GITHUB_PATH
       - name: Add Roswell to Windows Path
-        if: ${{ startsWith( inputs.os , 'windows' }}
+        if: ${{ startsWith( github.events.inputs.os , 'windows' }}
         run: |
           echo /c/Users/runneradmin/.roswell/lisp/quicklisp/bin >> $GITHUB_PATH
