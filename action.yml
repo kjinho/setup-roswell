@@ -4,29 +4,28 @@ on:
   workflow_call:
     inputs:
       lisp:
-        required: true
-        type: string
-      os:
+        description: 'The lisp to install'
+        default: 'sbcl-bin'
         required: true
         type: string
 
 jobs:
   setup_roswell:
-    name: ${{ github.events.inputs.lisp }} on ${{ github.events.inputs.os }}
+    name: ${{ inputs.lisp }} on ${{ runner.os }}
     steps:
       - name: Setup MSYS2 if Windows
-        if: ${{ startsWith( github.events.inputs.os , 'windows' }}
+        if: ${{ startsWith( runner.os , 'Windows' ) }}
         uses: msys2/setup-msys2@v2
       - name: Install Roswell
         env:
-          LISP: ${{ github.events.inputs.lisp }}
+          LISP: ${{ inputs.lisp }}
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
       - name: Add Roswell to Linux/MacOS Path
-        if: ${{ startsWith( github.events.inputs.os , 'ubuntu' ) || startsWith( github.events.inputs.os , 'mac' ) }}
+        if: ${{ startsWith( runner.os , 'Linux' ) || startsWith( runner.os , 'Mac' ) }}
         run: |
           echo $HOME/.roswell/bin >> $GITHUB_PATH
       - name: Add Roswell to Windows Path
-        if: ${{ startsWith( github.events.inputs.os , 'windows' }}
+        if: ${{ startsWith( runner.os , 'Windows' ) }}
         run: |
           echo /c/Users/runneradmin/.roswell/lisp/quicklisp/bin >> $GITHUB_PATH
